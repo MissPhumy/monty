@@ -1,37 +1,41 @@
 #include "monty.h"
-/**
- * f_push - add node to the stack
- * @head: stack head
- * @counter: line_number
- * Return: no return
-*/
-void f_push(stack_t **head, unsigned int counter)
-{
-	int n, j = 0, flag = 0;
 
-	if (bus.arg)
+/**
+ * _push - function that pushes an element to the stack.
+ * @stack: double pointer to the head of stack.
+ * @line_number: script line number.
+ *
+ * Usage: push <int> where <int> is an integer.
+ * if <int> is not an integer or if there is no argument given to push,
+ * print the error message L<line_number>: usage: push integer, followed,
+ * by a new line, and exit with the status EXIT_FAILURE where is the line,
+ * number in the file.
+ * You won’t have to deal with overflows. Use the atoi function.
+ *
+ * Return: No return.
+ */
+void _push(stack_t **stack, unsigned int line_number)
+{
+	stack_t *element = malloc(sizeof(stack_t));
+	char *opcode;
+	int num;
+
+	if (!element)
 	{
-		if (bus.arg[0] == '-')
-			j++;
-		for (; bus.arg[j] != '\0'; j++)
-		{
-			if (bus.arg[j] > 57 || bus.arg[j] < 48)
-				flag = 1; }
-		if (flag == 1)
-		{ fprintf(stderr, "L%d: usage: push integer\n", counter);
-			fclose(bus.file);
-			free(bus.content);
-			free_stack(*head);
-			exit(EXIT_FAILURE); }}
-	else
-	{ fprintf(stderr, "L%d: usage: push integer\n", counter);
-		fclose(bus.file);
-		free(bus.content);
-		free_stack(*head);
-		exit(EXIT_FAILURE); }
-	n = atoi(bus.arg);
-	if (bus.lifi == 0)
-		addnode(head, n);
-	else
-		addqueue(head, n);
+		fprintf(stderr, "Error: malloc failed\n");
+		exit(EXIT_FAILURE);
+	}
+	opcode = strtok(NULL, "\n\t\r ");
+	if (opcode == NULL || stack == NULL)
+	{
+		fprintf(stderr, "L%u: usage: push integer\n", line_number);
+		exit(EXIT_FAILURE);
+	}
+	num = interpreter(opcode, line_number);
+	element->n = num;
+	element->prev = NULL;
+	element->next = *stack;
+	if (element->next != NULL)
+		(element->next)->prev = element;
+	*stack = element;
 }
